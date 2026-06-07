@@ -1,19 +1,14 @@
-from fastapi import FastAPI
+from flask import Flask, jsonify
 
-app = FastAPI(
-    title="Indusdev Incident Assistant",
-    version="0.1"
-)
+app = Flask(__name__)
 
-@app.get("/")
+@app.route("/")
 def inicio():
-    return {
+    return jsonify({
         "sistema": "Indusdev Incident Assistant",
         "estado": "Operativo"
-    }
+    })
 
-@app.get("/health")
+@app.route("/health")
 def health():
-    return {
-        "ok": True
-    }
+    return jsonify({"ok": True})
