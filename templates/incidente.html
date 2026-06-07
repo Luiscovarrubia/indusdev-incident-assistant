@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Incidente</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>Incidente INC{{ "%03d"|format(incidente.id) }}</h1>
+
+  <div class="card">
+    <p><strong>Máquina:</strong> {{ incidente.maquina }}</p>
+    <p><strong>Estado:</strong> {{ incidente.estado }}</p>
+    <p><strong>Prioridad:</strong> {{ incidente.prioridad }}</p>
+    <p><strong>Fecha:</strong> {{ incidente.created_at }}</p>
+    <p><strong>Descripción:</strong> {{ incidente.descripcion }}</p>
+  </div>
+
+  <h2>Agregar evidencia</h2>
+
+  <form action="/incidente/{{ incidente.id }}/comentario" method="post" enctype="multipart/form-data">
+    <label>Autor</label>
+    <input type="text" name="autor" value="Operador">
+
+    <label>Tipo</label>
+    <select name="tipo">
+      <option value="OPERADOR">Operador</option>
+      <option value="TECNICO">Técnico</option>
+      <option value="ESPECIALISTA">Especialista</option>
+      <option value="SUPERVISOR">Supervisor</option>
+    </select>
+
+    <label>Comentario</label>
+    <textarea name="comentario" placeholder="Describa la anomalía o intervención"></textarea>
+
+    <label>Foto</label>
+    <input type="file" name="foto" accept="image/*" capture="environment">
+
+    <button type="submit">Guardar evidencia</button>
+  </form>
+
+  <h2>Historial</h2>
+
+  {% if comentarios %}
+    {% for c in comentarios %}
+    <div class="card">
+      <p><strong>{{ c.tipo }}</strong> - {{ c.autor }}</p>
+      <p>{{ c.fecha }}</p>
+      <p>{{ c.comentario }}</p>
+      {% if c.foto_url %}
+        <img src="{{ c.foto_url }}" class="foto">
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <p>Aún no hay evidencias.</p>
+  {% endif %}
+
+  <p><a href="/dashboard">Volver al dashboard</a></p>
+</body>
+</html>

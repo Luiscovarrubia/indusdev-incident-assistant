@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Indusdev</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>Indusdev Incident Assistant</h1>
+  <h2>Dashboard de incidentes</h2>
+
+  {% if incidentes %}
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Máquina</th>
+        <th>Estado</th>
+        <th>Prioridad</th>
+        <th>Fecha</th>
+        <th>Acción</th>
+      </tr>
+      {% for inc in incidentes %}
+      <tr>
+        <td>INC{{ "%03d"|format(inc.id) }}</td>
+        <td>{{ inc.maquina }}</td>
+        <td>{{ inc.estado }}</td>
+        <td>{{ inc.prioridad }}</td>
+        <td>{{ inc.created_at }}</td>
+        <td><a href="/incidente/{{ inc.id }}">Ver</a></td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>No hay incidentes registrados.</p>
+  {% endif %}
+</body>
+</html>

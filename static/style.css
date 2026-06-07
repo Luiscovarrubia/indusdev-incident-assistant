@@ -1,0 +1,55 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 24px;
+    background: #f4f4f4;
+  }
+  
+  .card {
+    background: white;
+    padding: 16px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+  
+  table {
+    width: 100%;
+    background: white;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+  
+  form {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  input, select, textarea, button {
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  textarea {
+    min-height: 100px;
+  }
+  
+  button {
+    background: #222;
+    color: white;
+    border: none;
+    border-radius: 6px;
+  }
+  
+  .foto {
+    max-width: 320px;
+    width: 100%;
+    border-radius: 8px;
+  }
