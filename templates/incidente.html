@@ -16,6 +16,18 @@
     <p><strong>Descripción:</strong> {{ incidente.descripcion }}</p>
   </div>
 
+  <h2>QR del incidente</h2>
+
+<div class="card">
+    <p>Escanee este código para agregar evidencia desde un teléfono.</p>
+
+    <img src="{{ qr_img }}" style="max-width:220px;">
+
+    <p>
+        <small>{{ url_incidente }}</small>
+    </p>
+  </div>
+
   <h2>Agregar evidencia</h2>
 
   <form action="/incidente/{{ incidente.id }}/comentario" method="post" enctype="multipart/form-data">

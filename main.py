@@ -9,6 +9,9 @@ from dotenv import load_dotenv
 import os
 import shutil
 import requests
+import qrcode
+from io import BytesIO
+import base64
 
 load_dotenv()
 
@@ -97,14 +100,30 @@ def ver_incidente_web(request: Request, incidente_id: int):
         f"comentarios?select=*&incidente_id=eq.{incidente_id}&order=id.asc"
     )
 
+    # return templates.TemplateResponse(
+    #     "incidente.html",
+    #     {
+    #         "request": request,
+    #         "incidente": incidentes[0],
+    #         "comentarios": comentarios
+    #     }
+    # )
+
+    url_incidente = str(request.url)
+    qr_img = generar_qr_base64(url_incidente)
+
     return templates.TemplateResponse(
-        "incidente.html",
-        {
-            "request": request,
-            "incidente": incidentes[0],
-            "comentarios": comentarios
-        }
+    "incidente.html",
+    {
+        "request": request,
+        "incidente": incidentes[0],
+        "comentarios": comentarios,
+        "qr_img": qr_img,
+        "url_incidente": url_incidente
+    }
     )
+
+
 
 
 @app.get("/api/incidente/{incidente_id}")
@@ -195,3 +214,10 @@ def supabase_post(table: str, payload: dict):
         return []
 
     return response.json()
+
+def generar_qr_base64(url: str):
+    qr = qrcode.make(url)
+    buffer = BytesIO()
+    qr.save(buffer, format="PNG")
+    qr_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    return f"data:image/png;base64,{qr_base64}"
