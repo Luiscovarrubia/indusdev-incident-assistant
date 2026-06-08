@@ -16,34 +16,22 @@
 
   <div class="card">
 
-    <p>
-      <strong>Máquina:</strong>
-      {{ incidente.maquina }}
-    </p>
+    <p><strong>Máquina:</strong> {{ incidente.maquina }}</p>
 
     <p>
       <strong>Estado incidente:</strong>
-
       <span class="badge estado-{{ incidente.estado|lower|replace('_','-') }}">
         {{ incidente.estado }}
       </span>
     </p>
 
-    <form action="/incidente/{{ incidente.id }}/estado" method="post" style="margin-top: 12px;">
+    <form action="/incidente/{{ incidente.id }}/estado" method="post">
       <label>Cambiar estado del incidente</label>
 
       <select name="estado">
-        <option value="ABIERTO" {% if incidente.estado == "ABIERTO" %}selected{% endif %}>
-          Abierto
-        </option>
-
-        <option value="EN_REVISION" {% if incidente.estado == "EN_REVISION" %}selected{% endif %}>
-          En revisión
-        </option>
-
-        <option value="CERRADO" {% if incidente.estado == "CERRADO" %}selected{% endif %}>
-          Cerrado
-        </option>
+        <option value="ABIERTO" {% if incidente.estado == "ABIERTO" %}selected{% endif %}>Abierto</option>
+        <option value="EN_REVISION" {% if incidente.estado == "EN_REVISION" %}selected{% endif %}>En revisión</option>
+        <option value="CERRADO" {% if incidente.estado == "CERRADO" %}selected{% endif %}>Cerrado</option>
       </select>
 
       <button type="submit">Actualizar estado</button>
@@ -51,9 +39,7 @@
 
     <p>
       <strong>Estado máquina:</strong>
-
       <span class="piloto piloto-{{ incidente.estado_maquina|lower|replace('_','-') }}"></span>
-
       <span class="badge maquina-{{ incidente.estado_maquina|lower|replace('_','-') }}">
         {{ incidente.estado_maquina }}
       </span>
@@ -61,56 +47,37 @@
 
     <p>
       <strong>Prioridad:</strong>
-
       <span class="badge prioridad-{{ incidente.prioridad|lower }}">
         {{ incidente.prioridad }}
       </span>
     </p>
 
-    <p>
-      <strong>Fecha:</strong>
-      {{ incidente.created_at }}
-    </p>
+    <p><strong>Fecha:</strong> {{ incidente.created_at }}</p>
 
-    <p>
-      <strong>Descripción:</strong>
-      {{ incidente.descripcion }}
-    </p>
+    {% if incidente.cerrado_at %}
+      <p><strong>Cerrado:</strong> {{ incidente.cerrado_at }}</p>
+    {% endif %}
+
+    <p><strong>Descripción:</strong> {{ incidente.descripcion }}</p>
 
   </div>
 
   <h2>QR del incidente</h2>
 
-  <div class="card">
-    <p>
-      Escanee este código para agregar evidencia desde un teléfono.
-    </p>
-
-    <img src="{{ qr_img }}" style="max-width:220px;">
-
-    <p>
-      <small>{{ url_incidente }}</small>
-    </p>
+  <div class="card qr-card">
+    <p>Escanee este código para agregar evidencia desde un teléfono.</p>
+    <img src="{{ qr_img }}" class="qr-img">
+    <p><small>{{ url_incidente }}</small></p>
   </div>
 
   <h2>Agregar evidencia</h2>
 
-  <form
-    action="/incidente/{{ incidente.id }}/comentario"
-    method="post"
-    enctype="multipart/form-data"
-  >
+  <form action="/incidente/{{ incidente.id }}/comentario" method="post" enctype="multipart/form-data">
 
     <label>Autor</label>
-
-    <input
-      type="text"
-      name="autor"
-      value="Operador"
-    >
+    <input type="text" name="autor" value="Operador">
 
     <label>Tipo</label>
-
     <select name="tipo">
       <option value="OPERADOR">Operador</option>
       <option value="TECNICO">Técnico</option>
@@ -119,107 +86,58 @@
     </select>
 
     <label>Estado de la máquina</label>
-
     <select name="estado_maquina">
-      <option value="OPERATIVA">
-        Operativa
-      </option>
-
-      <option value="OPERATIVA_CON_ANOMALIA" selected>
-        Operativa con anomalía
-      </option>
-
-      <option value="DETENIDA">
-        Detenida
-      </option>
-
-      <option value="MANTENIMIENTO">
-        Mantenimiento
-      </option>
+      <option value="OPERATIVA">Operativa</option>
+      <option value="OPERATIVA_CON_ANOMALIA" selected>Operativa con anomalía</option>
+      <option value="DETENIDA">Detenida</option>
+      <option value="MANTENIMIENTO">Mantenimiento</option>
     </select>
 
     <label>Comentario</label>
-
-    <textarea
-      name="comentario"
-      placeholder="Describa la anomalía o intervención"
-    ></textarea>
+    <textarea name="comentario" placeholder="Describa la anomalía o intervención"></textarea>
 
     <label>Foto</label>
+    <input type="file" name="foto" accept="image/*" capture="environment">
 
-    <input
-      type="file"
-      name="foto"
-      accept="image/*"
-      capture="environment"
-    >
-
-    <button type="submit">
-      Guardar evidencia
-    </button>
+    <button type="submit">Guardar evidencia</button>
 
   </form>
 
   <h2>Historial</h2>
 
   {% if comentarios %}
-
     {% for c in comentarios %}
-
     <div class="card">
-      <p>
-        <strong>{{ c.tipo }}</strong>
-        -
-        {{ c.autor }}
-      </p>
 
-      <p>
-        {{ c.fecha }}
-      </p>
+      <p><strong>{{ c.tipo }}</strong> - {{ c.autor }}</p>
+      <p>{{ c.fecha }}</p>
 
       {% if c.estado_maquina %}
-
       <p>
         <strong>Estado máquina:</strong>
-
         <span class="piloto piloto-{{ c.estado_maquina|lower|replace('_','-') }}"></span>
-
         <span class="badge maquina-{{ c.estado_maquina|lower|replace('_','-') }}">
           {{ c.estado_maquina }}
         </span>
       </p>
-
       {% endif %}
 
-      <p>
-        {{ c.comentario }}
-      </p>
+      <p>{{ c.comentario }}</p>
 
       {% if c.foto_url %}
-
-      <img
-        src="{{ c.foto_url }}"
-        class="foto"
-      >
-
+        <img src="{{ c.foto_url }}" class="foto">
       {% endif %}
 
     </div>
-
     {% endfor %}
-
   {% else %}
-
-  <div class="card">
-    <p>Aún no existen evidencias.</p>
-  </div>
-
+    <div class="card">
+      <p>Aún no existen evidencias.</p>
+    </div>
   {% endif %}
 
   <p>
-    <a class="btn" href="/dashboard">
-      Volver al dashboard
-    </a>
+    <a class="btn" href="/dashboard">Volver al dashboard</a>
   </p>
 
 </div>

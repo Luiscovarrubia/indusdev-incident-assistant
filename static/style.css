@@ -190,3 +190,76 @@ body {
   .piloto-sin-dato {
     background: #6c757d;
   }
+
+  .machine-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .machine-card {
+    display: block;
+    text-decoration: none;
+    color: #222;
+    padding: 18px;
+    border-radius: 12px;
+    border: 2px solid #ddd;
+    background: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  
+  .machine-card:hover {
+    transform: scale(1.02);
+  }
+  
+  .machine-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+  
+  .machine-status {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .machine-info {
+    font-size: 14px;
+    color: #444;
+  }
+  
+  .machine-operativa {
+    border-color: #28a745;
+    background: #eefaf1;
+  }
+  
+  .machine-operativa-con-anomalia {
+    border-color: #ffc107;
+    background: #fff8dc;
+  }
+  
+  .machine-detenida {
+    border-color: #dc3545;
+    background: #fdecec;
+  }
+  
+  .machine-mantenimiento {
+    border-color: #007bff;
+    background: #e9f3ff;
+  }
+  
+  .machine-sin-dato {
+    border-color: #6c757d;
+    background: #f1f1f1;
+  }
+  
+  .qr-card {
+    text-align: center;
+  }
+  
+  .qr-img {
+    max-width: 240px;
+    width: 100%;
+  }

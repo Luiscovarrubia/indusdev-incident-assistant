@@ -30,7 +30,7 @@ HEADERS = {
     "Prefer": "return=representation",
 }
 
-app = FastAPI(title="Indusdev Incident Assistant", version="0.6")
+app = FastAPI(title="Indusdev Incident Assistant", version="0.7")
 
 os.makedirs("static/uploads", exist_ok=True)
 
@@ -49,6 +49,7 @@ def inicio():
     return {
         "sistema": "Indusdev Incident Assistant",
         "estado": "Operativo",
+        "version": "0.7",
         "base_datos": "Supabase",
     }
 
@@ -67,6 +68,7 @@ def dashboard(request: Request):
         formatear_fechas_incidente(inc)
 
     resumen = calcular_resumen(incidentes)
+    maquinas_panel = construir_panel_maquinas(incidentes)
 
     return templates.TemplateResponse(
         "dashboard.html",
@@ -74,6 +76,7 @@ def dashboard(request: Request):
             "request": request,
             "incidentes": incidentes,
             "resumen": resumen,
+            "maquinas_panel": maquinas_panel,
         },
     )
 
@@ -372,6 +375,24 @@ def calcular_resumen(incidentes):
             resumen["maquinas_sin_dato"] += 1
 
     return resumen
+
+
+def construir_panel_maquinas(incidentes):
+    maquinas = {}
+
+    for inc in incidentes:
+        nombre = inc.get("maquina", "SIN_MAQUINA")
+
+        if nombre not in maquinas:
+            maquinas[nombre] = {
+                "maquina": nombre,
+                "incidente_id": inc.get("id"),
+                "estado_incidente": inc.get("estado", "SIN_DATO"),
+                "estado_maquina": inc.get("estado_maquina", "SIN_DATO"),
+                "created_at": inc.get("created_at", ""),
+            }
+
+    return list(maquinas.values())
 
 
 def obtener_ultimo_estado_maquina(incidente_id: int):
