@@ -1,10 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from io import BytesIO
 from typing import Optional
 import base64
 import os
 import shutil
 
+import pytz
 import qrcode
 import requests
 from dotenv import load_dotenv
@@ -20,6 +21,8 @@ load_dotenv()
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
+CHILE_TZ = pytz.timezone("America/Santiago")
+
 HEADERS = {
     "apikey": SUPABASE_KEY,
     "Authorization": f"Bearer {SUPABASE_KEY}",
@@ -27,7 +30,7 @@ HEADERS = {
     "Prefer": "return=representation",
 }
 
-app = FastAPI(title="Indusdev Incident Assistant", version="0.5")
+app = FastAPI(title="Indusdev Incident Assistant", version="0.6")
 
 os.makedirs("static/uploads", exist_ok=True)
 
@@ -61,6 +64,7 @@ def dashboard(request: Request):
 
     for inc in incidentes:
         inc["estado_maquina"] = obtener_ultimo_estado_maquina(inc["id"])
+        formatear_fechas_incidente(inc)
 
     resumen = calcular_resumen(incidentes)
 
@@ -80,6 +84,7 @@ def listar_incidentes():
 
     for inc in incidentes:
         inc["estado_maquina"] = obtener_ultimo_estado_maquina(inc["id"])
+        formatear_fechas_incidente(inc)
 
     return {
         "cantidad": len(incidentes),
@@ -94,6 +99,7 @@ def crear_incidente(data: IncidenteEntrada):
         "estado": "ABIERTO",
         "prioridad": "MEDIA",
         "descripcion": data.descripcion,
+        "m5_activo": True,
     }
 
     creado = supabase_post("incidentes", payload_incidente)
@@ -138,8 +144,12 @@ def ver_incidente_web(request: Request, incidente_id: int):
 
     incidente = incidentes[0]
     incidente["estado_maquina"] = obtener_ultimo_estado_maquina(incidente_id)
+    formatear_fechas_incidente(incidente)
 
     comentarios = obtener_comentarios_incidente(incidente_id)
+
+    for comentario in comentarios:
+        formatear_fechas_comentario(comentario)
 
     url_incidente = str(request.url)
     qr_img = generar_qr_base64(url_incidente)
@@ -177,6 +187,50 @@ def ver_incidente_api(incidente_id: int):
     }
 
 
+@app.get("/api/maquina/{maquina}")
+def estado_maquina_para_m5(maquina: str):
+    incidentes = supabase_get(
+        "incidentes?"
+        "select=*"
+        f"&maquina=eq.{maquina}"
+        "&order=id.desc"
+        "&limit=1"
+    )
+
+    if not incidentes:
+        return {
+            "ok": True,
+            "maquina": maquina,
+            "estado_dispositivo": "LIBRE",
+            "mensaje": "Sin incidentes",
+        }
+
+    incidente = incidentes[0]
+    estado = incidente.get("estado")
+    m5_activo = incidente.get("m5_activo", False)
+
+    if estado == "CERRADO" or not m5_activo:
+        return {
+            "ok": True,
+            "maquina": maquina,
+            "estado_dispositivo": "LIBRE",
+            "mensaje": "Sin incidente activo",
+        }
+
+    incidente_id = incidente["id"]
+    estado_maquina = obtener_ultimo_estado_maquina(incidente_id)
+
+    return {
+        "ok": True,
+        "maquina": maquina,
+        "estado_dispositivo": "INCIDENTE",
+        "incidente_id": incidente_id,
+        "estado_incidente": estado,
+        "estado_maquina": estado_maquina,
+        "url_incidente": f"/incidente/{incidente_id}",
+    }
+
+
 @app.post("/incidente/{incidente_id}/estado")
 def actualizar_estado_incidente(
     incidente_id: int,
@@ -190,10 +244,19 @@ def actualizar_estado_incidente(
             "mensaje": "Estado no válido",
         }
 
+    payload = {"estado": estado}
+
+    if estado == "CERRADO":
+        payload["m5_activo"] = False
+        payload["cerrado_at"] = datetime.now(timezone.utc).isoformat()
+    else:
+        payload["m5_activo"] = True
+        payload["cerrado_at"] = None
+
     actualizado = supabase_patch(
         "incidentes",
         f"id=eq.{incidente_id}",
-        {"estado": estado},
+        payload,
     )
 
     if not actualizado:
@@ -201,6 +264,20 @@ def actualizar_estado_incidente(
             "ok": False,
             "mensaje": "No se pudo actualizar el estado",
         }
+
+    if estado == "CERRADO":
+        payload_comentario_cierre = {
+            "incidente_id": incidente_id,
+            "autor": "Supervisor",
+            "tipo": "SUPERVISOR",
+            "comentario": "Incidente cerrado desde dashboard",
+            "foto_url": None,
+            "estado_maquina": "OPERATIVA",
+            "prioridad": "MEDIA",
+            "visible_cliente": True,
+        }
+
+        supabase_post("comentarios", payload_comentario_cierre)
 
     return RedirectResponse(
         url=f"/incidente/{incidente_id}",
@@ -327,6 +404,38 @@ def generar_qr_base64(url: str):
     qr.save(buffer, format="PNG")
     qr_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
     return f"data:image/png;base64,{qr_base64}"
+
+
+def convertir_fecha_chile(valor):
+    if not valor:
+        return ""
+
+    try:
+        dt = datetime.fromisoformat(valor.replace("Z", "+00:00"))
+
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+
+        dt_chile = dt.astimezone(CHILE_TZ)
+        return dt_chile.strftime("%d-%m-%Y %H:%M:%S")
+    except Exception:
+        return valor
+
+
+def formatear_fechas_incidente(inc):
+    if "created_at" in inc:
+        inc["created_at"] = convertir_fecha_chile(inc.get("created_at"))
+
+    if "cerrado_at" in inc:
+        inc["cerrado_at"] = convertir_fecha_chile(inc.get("cerrado_at"))
+
+
+def formatear_fechas_comentario(comentario):
+    if "fecha" in comentario:
+        comentario["fecha"] = convertir_fecha_chile(comentario.get("fecha"))
+
+    if "created_at" in comentario:
+        comentario["created_at"] = convertir_fecha_chile(comentario.get("created_at"))
 
 
 def supabase_get(path: str):
