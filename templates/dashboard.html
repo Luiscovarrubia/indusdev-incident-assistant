@@ -6,32 +6,109 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+
+<div class="header">
   <h1>Indusdev Incident Assistant</h1>
-  <h2>Dashboard de incidentes</h2>
+  <p>Dashboard de incidentes de mantenimiento</p>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Resumen general</h2>
+
+    <p><strong>Total incidentes:</strong> {{ resumen.total }}</p>
+
+    <p>
+      <span class="badge estado-abierto">ABIERTO: {{ resumen.incidentes_abiertos }}</span>
+      <span class="badge estado-revision">EN REVISIÓN: {{ resumen.incidentes_revision }}</span>
+      <span class="badge estado-cerrado">CERRADO: {{ resumen.incidentes_cerrados }}</span>
+    </p>
+
+    <p>
+      <span class="piloto piloto-operativa"></span>
+      <strong>Operativas:</strong> {{ resumen.maquinas_operativas }}
+
+      &nbsp;&nbsp;
+
+      <span class="piloto piloto-operativa-con-anomalia"></span>
+      <strong>Con anomalía:</strong> {{ resumen.maquinas_anomalia }}
+
+      &nbsp;&nbsp;
+
+      <span class="piloto piloto-detenida"></span>
+      <strong>Detenidas:</strong> {{ resumen.maquinas_detenidas }}
+
+      &nbsp;&nbsp;
+
+      <span class="piloto piloto-mantenimiento"></span>
+      <strong>Mantenimiento:</strong> {{ resumen.maquinas_mantenimiento }}
+    </p>
+  </div>
 
   {% if incidentes %}
-    <table>
-      <tr>
-        <th>ID</th>
-        <th>Máquina</th>
-        <th>Estado</th>
-        <th>Prioridad</th>
-        <th>Fecha</th>
-        <th>Acción</th>
-      </tr>
-      {% for inc in incidentes %}
-      <tr>
-        <td>INC{{ "%03d"|format(inc.id) }}</td>
-        <td>{{ inc.maquina }}</td>
-        <td>{{ inc.estado }}</td>
-        <td>{{ inc.prioridad }}</td>
-        <td>{{ inc.created_at }}</td>
-        <td><a href="/incidente/{{ inc.id }}">Ver</a></td>
-      </tr>
-      {% endfor %}
-    </table>
+
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Máquina</th>
+      <th>Estado incidente</th>
+      <th>Estado máquina</th>
+      <th>Prioridad</th>
+      <th>Fecha</th>
+      <th>Acción</th>
+    </tr>
+
+    {% for inc in incidentes %}
+    <tr>
+      <td>
+        <strong>INC{{ "%03d"|format(inc.id) }}</strong>
+      </td>
+
+      <td>
+        {{ inc.maquina }}
+      </td>
+
+      <td>
+        <span class="badge estado-{{ inc.estado|lower|replace('_','-') }}">
+          {{ inc.estado }}
+        </span>
+      </td>
+
+      <td>
+        <span class="piloto piloto-{{ inc.estado_maquina|lower|replace('_','-') }}"></span>
+
+        <span class="badge maquina-{{ inc.estado_maquina|lower|replace('_','-') }}">
+          {{ inc.estado_maquina }}
+        </span>
+      </td>
+
+      <td>
+        <span class="badge prioridad-{{ inc.prioridad|lower }}">
+          {{ inc.prioridad }}
+        </span>
+      </td>
+
+      <td>
+        {{ inc.created_at }}
+      </td>
+
+      <td>
+        <a class="btn" href="/incidente/{{ inc.id }}">Ver</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
   {% else %}
-    <p>No hay incidentes registrados.</p>
+
+  <div class="card">
+    <p>No existen incidentes registrados.</p>
+  </div>
+
   {% endif %}
+
+</div>
+
 </body>
 </html>
