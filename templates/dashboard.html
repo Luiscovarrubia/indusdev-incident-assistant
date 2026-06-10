@@ -4,12 +4,55 @@
   <meta charset="UTF-8">
   <title>Dashboard Indusdev</title>
   <link rel="stylesheet" href="/static/style.css">
+
+  <script>
+    let autoRefresh = localStorage.getItem("autoRefresh") === "true";
+    
+    function actualizarTextoRefresh() {
+        const estado = document.getElementById("refresh-status");
+    
+        if (!estado) return;
+    
+        if (autoRefresh) {
+            estado.innerHTML = "🟢 Auto Refresh ON";
+        } else {
+            estado.innerHTML = "⚪ Auto Refresh OFF";
+        }
+    }
+    
+    function toggleRefresh() {
+        autoRefresh = !autoRefresh;
+        localStorage.setItem("autoRefresh", autoRefresh);
+        actualizarTextoRefresh();
+    }
+    
+    setInterval(() => {
+        if (autoRefresh) {
+            location.reload();
+        }
+    }, 30000);
+    
+    window.onload = actualizarTextoRefresh;
+    </script>
+
 </head>
 <body>
 
 <div class="header">
   <h1>Indusdev Incident Assistant</h1>
   <p>Estado general de máquinas e incidentes</p>
+</div>
+
+<div class="card">
+
+    <button onclick="toggleRefresh()">
+        Activar / Desactivar Auto Refresh
+    </button>
+
+    <span id="refresh-status">
+        ⚪ Auto Refresh OFF
+    </span>
+
 </div>
 
 <div class="container">

@@ -263,3 +263,15 @@ body {
     max-width: 240px;
     width: 100%;
   }
+
+  .dictado-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  
+  .dictado-estado {
+    font-size: 14px;
+    color: #555;
+  }

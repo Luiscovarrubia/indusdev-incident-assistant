@@ -5,6 +5,42 @@
   <title>Incidente INC{{ "%03d"|format(incidente.id) }}</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
+
+<script>
+    function iniciarDictado() {
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+      if (!SpeechRecognition) {
+        alert("Este navegador no soporta dictado por voz. Pruebe con Chrome en Android.");
+        return;
+      }
+    
+      const recognition = new SpeechRecognition();
+      recognition.lang = "es-CL";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+    
+      recognition.start();
+    
+      recognition.onresult = function(event) {
+        const texto = event.results[0][0].transcript;
+        const campo = document.getElementById("comentario");
+    
+        if (campo.value.trim() !== "") {
+          campo.value += "\n";
+        }
+    
+        campo.value += texto;
+      };
+    
+      recognition.onerror = function(event) {
+        alert("Error en dictado: " + event.error);
+      };
+    }
+    </script>
+
+
 <body>
 
 <div class="header">
@@ -94,8 +130,24 @@
     </select>
 
     <label>Comentario</label>
-    <textarea name="comentario" placeholder="Describa la anomalía o intervención"></textarea>
 
+    <div class="dictado-box">
+     <button type="button" onclick="iniciarDictado()" id="btn-dictado">
+        🎤 Dictar comentario
+    </button>
+
+    <span id="estado-dictado" class="dictado-estado">
+        Listo para escribir o dictar
+    </span>
+    </div>
+
+    <textarea
+    
+  id="comentario"
+  name="comentario"
+  placeholder="Puede escribir aquí o usar el botón de dictado"
+></textarea>
+  
     <label>Foto</label>
     <input type="file" name="foto" accept="image/*" capture="environment">
 
