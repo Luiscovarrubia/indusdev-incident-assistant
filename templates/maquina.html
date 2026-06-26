@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Máquina {{ maquina }}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="header">
+  <h1>{{ maquina }}</h1>
+  <p>Ficha operacional de máquina</p>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Estado actual</h2>
+
+    <p>
+      <span class="piloto piloto-{{ estado_actual|lower|replace('_','-') }}"></span>
+      <span class="badge maquina-{{ estado_actual|lower|replace('_','-') }}">
+        {{ estado_actual }}
+      </span>
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Buscador técnico</h2>
+    <p>
+      Próximamente podrá filtrar por falla, procedimiento, componentes,
+      técnico, fecha, tiempo detenido y estado.
+    </p>
+
+    <input
+      type="text"
+      disabled
+      placeholder="Buscar por encoder, rodamiento, F1003, sensor..."
+    >
+  </div>
+
+  <div class="card">
+    <h2>Historial de incidentes</h2>
+
+    {% if incidentes %}
+
+    <table>
+        <tr>
+          <th>ID</th>
+          <th>Fecha</th>
+          <th>Estado máquina</th>
+          <th>Falla</th>
+          <th>Tiempo detenido</th>
+          <th>Estado incidente</th>
+          <th>Acción</th>
+        </tr>
+      
+        {% for inc in incidentes %}
+        <tr>
+          <td><strong>INC{{ "%03d"|format(inc.id) }}</strong></td>
+          <td>{{ inc.created_at }}</td>
+      
+          <td>
+            <span class="piloto piloto-{{ inc.estado_maquina|lower|replace('_','-') }}"></span>
+            {{ inc.estado_maquina }}
+          </td>
+      
+          <td>{{ inc.ultima_falla }}</td>
+          <td>{{ inc.duracion_detenido }}</td>
+          <td>{{ inc.estado }}</td>
+      
+          <td>
+            <a class="btn" href="/incidente/{{ inc.id }}">Ver incidente</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+
+    {% else %}
+      <p>No hay incidentes registrados para esta máquina.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>IoT futuro</h2>
+    <p>
+      Aquí se podrán mostrar temperatura, presión, vibración, corriente,
+      horas de servicio y alertas de condición.
+    </p>
+  </div>
+
+  <p>
+    <a class="btn" href="/dashboard">Volver al dashboard</a>
+  </p>
+
+</div>
+
+</body>
+</html>

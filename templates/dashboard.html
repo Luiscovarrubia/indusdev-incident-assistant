@@ -63,7 +63,7 @@
   <div class="machine-grid">
     {% for m in maquinas_panel %}
     <a class="machine-card machine-{{ m.estado_maquina|lower|replace('_','-') }}"
-       href="/incidente/{{ m.incidente_id if m.incidente_id else '' }}">
+        href="/maquina/{{ m.maquina }}">
 
       <div class="machine-title">{{ m.maquina }}</div>
 
@@ -104,6 +104,8 @@
   <h2>Historial de incidentes</h2>
 
   {% if incidentes %}
+ 
+
   <table>
     <tr>
       <th>ID</th>
@@ -111,42 +113,58 @@
       <th>Estado incidente</th>
       <th>Estado máquina</th>
       <th>Prioridad</th>
+      <th>Inicio detención</th>
+      <th>Fin detención</th>
+      <th>Tiempo detenido</th>
       <th>Fecha</th>
       <th>Acción</th>
     </tr>
-
+  
     {% for inc in incidentes %}
     <tr>
       <td><strong>INC{{ "%03d"|format(inc.id) }}</strong></td>
+  
       <td>{{ inc.maquina }}</td>
-
+  
       <td>
         <span class="badge estado-{{ inc.estado|lower|replace('_','-') }}">
           {{ inc.estado }}
         </span>
       </td>
-
+  
       <td>
-        <span class="piloto piloto-{{ inc.estado_maquina|lower|replace('_','-') }}"></span>
-        <span class="badge maquina-{{ inc.estado_maquina|lower|replace('_','-') }}">
-          {{ inc.estado_maquina }}
-        </span>
+        {{ inc.estado_maquina }}
+      </td>
+  
+      <td>
+        {{ inc.prioridad }}
+      </td>
+      
+      <td>
+        {{ inc.inicio_parada or "-" }}
       </td>
 
       <td>
-        <span class="badge prioridad-{{ inc.prioridad|lower }}">
-          {{ inc.prioridad }}
-        </span>
+        {{ inc.fin_parada or "-" }}
       </td>
 
-      <td>{{ inc.created_at }}</td>
 
       <td>
-        <a class="btn" href="/incidente/{{ inc.id }}">Ver</a>
+        {{ inc.duracion_detenido }}
       </td>
+  
+      <td>
+        {{ inc.created_at }}
+      </td>
+  
+      <td>
+        <a href="/incidente/{{ inc.id }}">Ver</a>
+      </td>
+  
     </tr>
     {% endfor %}
   </table>
+
   {% else %}
     <div class="card">
       <p>No existen incidentes registrados.</p>

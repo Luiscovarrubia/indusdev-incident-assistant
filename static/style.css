@@ -1,64 +1,175 @@
-body {
-    font-family: Arial, sans-serif;
+/* ==========================================================
+   INDUSDEV INCIDENT ASSISTANT
+   style.css
+   Versión: 0.9
+   ========================================================== */
+
+
+/* ==========================================================
+   1. ESTILOS GENERALES
+   ========================================================== */
+
+   * {
+    box-sizing: border-box;
+  }
+  
+  body {
     margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
     background: #eef1f4;
     color: #222;
   }
   
+  .container {
+    width: 95%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0 40px 0;
+  }
+  
+  h1,
+  h2,
+  h3 {
+    margin-top: 0;
+  }
+  
+  a {
+    color: inherit;
+  }
+  
+  
+  /* ==========================================================
+     2. HEADER
+     ========================================================== */
+  
   .header {
     background: #1f2933;
     color: white;
-    padding: 20px 28px;
+    padding: 24px;
+    text-align: center;
   }
   
   .header h1 {
     margin: 0;
-    font-size: 26px;
+    font-size: 30px;
   }
   
   .header p {
-    margin: 6px 0 0 0;
-    color: #cfd8dc;
+    margin: 8px 0 0 0;
+    color: #d1d5db;
   }
   
-  .container {
-    padding: 24px;
-  }
+  
+  /* ==========================================================
+     3. CARDS
+     ========================================================== */
   
   .card {
     background: white;
-    padding: 18px;
-    margin-bottom: 16px;
     border-radius: 10px;
-    border: 1px solid #d6d6d6;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 20px;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
+  
+  
+  /* ==========================================================
+     4. BOTONES
+     ========================================================== */
+  
+  button,
+  .btn {
+    display: inline-block;
+    background: #1f2933;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 18px;
+    font-size: 16px;
+    text-decoration: none;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  button:hover,
+  .btn:hover {
+    background: #111827;
+  }
+  
+  button:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+  }
+  
+  
+  /* ==========================================================
+     5. FORMULARIOS
+     ========================================================== */
+  
+  label {
+    display: block;
+    margin-top: 16px;
+    margin-bottom: 6px;
+    font-weight: bold;
+  }
+  
+  input,
+  select,
+  textarea {
+    width: 100%;
+    display: block;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #d5d9de;
+    border-radius: 6px;
+    background: white;
+  }
+  
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  
+  input[type="file"] {
+    border: none;
+    padding-left: 0;
+  }
+  
+  
+  /* ==========================================================
+     6. TABLAS
+     ========================================================== */
   
   table {
     width: 100%;
-    background: white;
     border-collapse: collapse;
-    border-radius: 10px;
-    overflow: hidden;
+    background: white;
+  }
+  
+  th,
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+    vertical-align: top;
   }
   
   th {
-    background: #263238;
-    color: white;
-    text-align: left;
+    background: #f3f4f6;
+    font-weight: bold;
   }
   
-  th, td {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
-  }
+  
+  /* ==========================================================
+     7. BADGES Y ESTADOS
+     ========================================================== */
   
   .badge {
-    padding: 6px 10px;
-    border-radius: 16px;
-    font-weight: bold;
-    font-size: 13px;
     display: inline-block;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: bold;
   }
   
   .estado-abierto {
@@ -66,7 +177,7 @@ body {
     color: #856404;
   }
   
-  .estado-revision {
+  .estado-en-revision {
     background: #cce5ff;
     color: #004085;
   }
@@ -76,66 +187,6 @@ body {
     color: #155724;
   }
   
-  .prioridad-baja {
-    background: #d4edda;
-    color: #155724;
-  }
-  
-  .prioridad-media {
-    background: #fff3cd;
-    color: #856404;
-  }
-  
-  .prioridad-alta {
-    background: #f8d7da;
-    color: #721c24;
-  }
-  
-  .prioridad-critica {
-    background: #721c24;
-    color: white;
-  }
-  
-  .btn {
-    background: #1f2933;
-    color: white;
-    padding: 8px 12px;
-    text-decoration: none;
-    border-radius: 6px;
-    display: inline-block;
-  }
-  
-  form {
-    background: white;
-    padding: 18px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  input, select, textarea, button {
-    padding: 10px;
-    font-size: 16px;
-  }
-  
-  textarea {
-    min-height: 100px;
-  }
-  
-  button {
-    background: #1f2933;
-    color: white;
-    border: none;
-    border-radius: 6px;
-  }
-  
-  .foto {
-    max-width: 320px;
-    width: 100%;
-    border-radius: 8px;
-  }
-
   .maquina-operativa {
     background: #d4edda;
     color: #155724;
@@ -160,15 +211,34 @@ body {
     background: #e2e3e5;
     color: #383d41;
   }
-
+  
+  .prioridad-baja {
+    background: #d4edda;
+    color: #155724;
+  }
+  
+  .prioridad-media {
+    background: #fff3cd;
+    color: #856404;
+  }
+  
+  .prioridad-alta {
+    background: #f8d7da;
+    color: #721c24;
+  }
+  
+  
+  /* ==========================================================
+     8. PILOTOS DE ESTADO
+     ========================================================== */
+  
   .piloto {
+    display: inline-block;
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    display: inline-block;
-    margin-right: 8px;
+    margin-right: 6px;
     vertical-align: middle;
-    box-shadow: 0 0 6px rgba(0,0,0,0.35);
   }
   
   .piloto-operativa {
@@ -190,7 +260,12 @@ body {
   .piloto-sin-dato {
     background: #6c757d;
   }
-
+  
+  
+  /* ==========================================================
+     9. DASHBOARD - TARJETAS DE MÁQUINAS
+     ========================================================== */
+  
   .machine-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -255,6 +330,11 @@ body {
     background: #f1f1f1;
   }
   
+  
+  /* ==========================================================
+     10. QR Y FOTOS
+     ========================================================== */
+  
   .qr-card {
     text-align: center;
   }
@@ -263,15 +343,149 @@ body {
     max-width: 240px;
     width: 100%;
   }
-
+  
+  .foto {
+    max-width: 100%;
+    margin-top: 12px;
+    border-radius: 8px;
+  }
+  
+  
+  /* ==========================================================
+     11. DICTADO
+     ========================================================== */
+  
   .dictado-box {
     display: flex;
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
+    margin-bottom: 10px;
   }
   
   .dictado-estado {
     font-size: 14px;
     color: #555;
+  }
+  
+  
+  /* ==========================================================
+     12. MODO TÉCNICO
+     ========================================================== */
+  
+  .area-tecnica-acceso {
+    margin-top: 24px;
+  }
+  
+  .area-tecnica-acceso button {
+    width: 100%;
+  }
+  
+  .modo-tecnico {
+    margin-top: 24px;
+    padding: 18px;
+    border: 2px solid #1f2933;
+    border-radius: 12px;
+    background: #f8fafc;
+  }
+  
+  .modo-tecnico-header {
+    display: block;
+    background: #1f2933;
+    color: white;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 18px;
+  }
+  
+  .modo-tecnico label {
+    display: block;
+    width: 100%;
+    margin-top: 18px;
+    margin-bottom: 6px;
+    font-weight: bold;
+  }
+  
+  .modo-tecnico select,
+  .modo-tecnico textarea,
+  .modo-tecnico input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+  }
+  
+  .modo-tecnico textarea {
+    min-height: 110px;
+  }
+  
+  
+  /* ==========================================================
+     13. MODAL LOGIN TÉCNICO
+     ========================================================== */
+  
+  .modal-login {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.45);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  
+  .modal-contenido {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 320px;
+    max-width: 90%;
+  }
+  
+  
+  /* ==========================================================
+     14. RESPONSIVE
+     ========================================================== */
+  
+  @media (max-width: 768px) {
+    .container {
+      width: 95%;
+      padding-top: 14px;
+    }
+  
+    .header h1 {
+      font-size: 24px;
+    }
+  
+    .card {
+      padding: 16px;
+    }
+  
+    table {
+      font-size: 14px;
+    }
+  
+    th,
+    td {
+      padding: 8px;
+    }
+  
+    button,
+    .btn {
+      width: 100%;
+      text-align: center;
+    }
+  
+    .dictado-box {
+      display: block;
+    }
+  
+    .dictado-box button {
+      margin-bottom: 8px;
+    }
   }

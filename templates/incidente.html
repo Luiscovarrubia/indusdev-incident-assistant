@@ -3,46 +3,104 @@
 <head>
   <meta charset="UTF-8">
   <title>Incidente INC{{ "%03d"|format(incidente.id) }}</title>
-  <link rel="stylesheet" href="/static/style.css">
-</head>
+  <link rel="stylesheet" href="/static/style.css?v=3">
 
-<script>
+  <!-- =====================================================
+       JAVASCRIPT
+       - Dictado de comentario
+       - Login simple de modo técnico
+       ===================================================== -->
+  <script>
     function iniciarDictado() {
       const SpeechRecognition =
         window.SpeechRecognition || window.webkitSpeechRecognition;
-    
+
+      const estado = document.getElementById("estado-dictado");
+      const boton = document.getElementById("btn-dictado");
+      const campo = document.getElementById("comentario");
+
       if (!SpeechRecognition) {
-        alert("Este navegador no soporta dictado por voz. Pruebe con Chrome en Android.");
+        alert("Este navegador no soporta dictado por voz. En iPhone use el micrófono del teclado.");
         return;
       }
-    
+
       const recognition = new SpeechRecognition();
       recognition.lang = "es-CL";
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
-    
+
+      estado.innerHTML = "🔴 Escuchando...";
+      boton.disabled = true;
+      boton.innerHTML = "Escuchando...";
+
       recognition.start();
-    
+
       recognition.onresult = function(event) {
         const texto = event.results[0][0].transcript;
-        const campo = document.getElementById("comentario");
-    
+
         if (campo.value.trim() !== "") {
           campo.value += "\n";
         }
-    
+
         campo.value += texto;
+
+        estado.innerHTML = "✅ Texto agregado";
+        boton.disabled = false;
+        boton.innerHTML = "🎤 Dictar comentario";
       };
-    
+
       recognition.onerror = function(event) {
-        alert("Error en dictado: " + event.error);
+        estado.innerHTML = "⚠️ Error en dictado: " + event.error;
+        boton.disabled = false;
+        boton.innerHTML = "🎤 Dictar comentario";
+      };
+
+      recognition.onend = function() {
+        if (boton.disabled) {
+          boton.disabled = false;
+          boton.innerHTML = "🎤 Dictar comentario";
+          estado.innerHTML = "Dictado finalizado";
+        }
       };
     }
-    </script>
 
+    function abrirLoginTecnico() {
+      document.getElementById("login-tecnico").style.display = "flex";
+    }
+
+    function cerrarLoginTecnico() {
+      document.getElementById("login-tecnico").style.display = "none";
+    }
+
+    function validarModoTecnico() {
+      const clave = document.getElementById("clave_tecnica_modal").value;
+
+      if (clave === "tec2026") {
+        document.getElementById("modo-tecnico").style.display = "block";
+        document.getElementById("login-tecnico").style.display = "none";
+
+        document.getElementById("clave_tecnica").value = clave;
+        document.getElementById("tipo").value = "TECNICO";
+        document.querySelector("input[name='autor']").value = "Técnico";
+
+        const botonTecnico = document.getElementById("btn-modo-tecnico");
+
+        if (botonTecnico) {
+          botonTecnico.innerHTML = "🟢 Modo Técnico Activo";
+          botonTecnico.disabled = true;
+        }
+      } else {
+        alert("Clave incorrecta");
+      }
+    }
+  </script>
+</head>
 
 <body>
 
+<!-- =====================================================
+     CABECERA
+     ===================================================== -->
 <div class="header">
   <h1>Incidente INC{{ "%03d"|format(incidente.id) }}</h1>
   <p>{{ incidente.maquina }}</p>
@@ -50,6 +108,9 @@
 
 <div class="container">
 
+  <!-- =====================================================
+       RESUMEN DEL INCIDENTE
+       ===================================================== -->
   <div class="card">
 
     <p><strong>Máquina:</strong> {{ incidente.maquina }}</p>
@@ -90,14 +151,28 @@
 
     <p><strong>Fecha:</strong> {{ incidente.created_at }}</p>
 
+    {% if incidente.inicio_parada %}
+      <p><strong>Inicio detención:</strong> {{ incidente.inicio_parada }}</p>
+    {% endif %}
+
+    {% if incidente.fin_parada %}
+      <p><strong>Fin detención:</strong> {{ incidente.fin_parada }}</p>
+    {% endif %}
+
+    {% if incidente.duracion_detenido and incidente.duracion_detenido != "-" %}
+      <p><strong>Tiempo detenido:</strong> {{ incidente.duracion_detenido }}</p>
+    {% endif %}
+
     {% if incidente.cerrado_at %}
       <p><strong>Cerrado:</strong> {{ incidente.cerrado_at }}</p>
     {% endif %}
 
     <p><strong>Descripción:</strong> {{ incidente.descripcion }}</p>
-
   </div>
 
+  <!-- =====================================================
+       QR DEL INCIDENTE
+       ===================================================== -->
   <h2>QR del incidente</h2>
 
   <div class="card qr-card">
@@ -106,55 +181,127 @@
     <p><small>{{ url_incidente }}</small></p>
   </div>
 
+  <!-- =====================================================
+       FORMULARIO DE EVIDENCIA
+       Visible para supervisor y técnico.
+       El modo técnico agrega campos especiales.
+       ===================================================== -->
   <h2>Agregar evidencia</h2>
 
   <form action="/incidente/{{ incidente.id }}/comentario" method="post" enctype="multipart/form-data">
 
+    <input type="hidden" name="tipo" id="tipo" value="SUPERVISOR">
+
     <label>Autor</label>
-    <input type="text" name="autor" value="Operador">
-
-    <label>Tipo</label>
-    <select name="tipo">
-      <option value="OPERADOR">Operador</option>
-      <option value="TECNICO">Técnico</option>
-      <option value="ESPECIALISTA">Especialista</option>
-      <option value="SUPERVISOR">Supervisor</option>
-    </select>
-
-    <label>Estado de la máquina</label>
-    <select name="estado_maquina">
-      <option value="OPERATIVA">Operativa</option>
-      <option value="OPERATIVA_CON_ANOMALIA" selected>Operativa con anomalía</option>
-      <option value="DETENIDA">Detenida</option>
-      <option value="MANTENIMIENTO">Mantenimiento</option>
-    </select>
+    <input type="text" name="autor" value="Supervisor">
 
     <label>Comentario</label>
 
     <div class="dictado-box">
-     <button type="button" onclick="iniciarDictado()" id="btn-dictado">
+      <button type="button" onclick="iniciarDictado()" id="btn-dictado">
         🎤 Dictar comentario
-    </button>
+      </button>
 
-    <span id="estado-dictado" class="dictado-estado">
+      <span id="estado-dictado" class="dictado-estado">
         Listo para escribir o dictar
-    </span>
+      </span>
     </div>
 
     <textarea
-    
-  id="comentario"
-  name="comentario"
-  placeholder="Puede escribir aquí o usar el botón de dictado"
-></textarea>
-  
+      id="comentario"
+      name="comentario"
+      placeholder="Comentario general o evidencia del evento"
+    ></textarea>
+
     <label>Foto</label>
     <input type="file" name="foto" accept="image/*" capture="environment">
 
-    <button type="submit">Guardar evidencia</button>
+    <!-- Acceso visual al modo técnico -->
+    <div class="area-tecnica-acceso">
+      <button type="button" id="btn-modo-tecnico" onclick="abrirLoginTecnico()">
+        🔧 Ingresar como técnico
+      </button>
+    </div>
 
+    <!-- =====================================================
+         MODO TÉCNICO
+         Se muestra solo después de validar clave.
+         ===================================================== -->
+    <div id="modo-tecnico" class="modo-tecnico" style="display:none;">
+
+      <div class="modo-tecnico-header">
+        🟢 Modo Técnico Activo
+      </div>
+
+      <input type="hidden" name="clave_tecnica" id="clave_tecnica">
+
+      <label>Estado de la máquina</label>
+      <select name="estado_maquina">
+        <option value="OPERATIVA"
+          {% if incidente.estado_maquina == "OPERATIVA" %}selected{% endif %}>
+          Operativa
+        </option>
+
+        <option value="OPERATIVA_CON_ANOMALIA"
+          {% if incidente.estado_maquina == "OPERATIVA_CON_ANOMALIA" %}selected{% endif %}>
+          Operativa con anomalía
+        </option>
+
+        <option value="DETENIDA"
+          {% if incidente.estado_maquina == "DETENIDA" %}selected{% endif %}>
+          Detenida
+        </option>
+
+        <option value="MANTENIMIENTO"
+          {% if incidente.estado_maquina == "MANTENIMIENTO" %}selected{% endif %}>
+          Mantenimiento
+        </option>
+      </select>
+
+      <label>Falla detectada</label>
+      <textarea
+        name="falla"
+        placeholder="Ej: Encoder sin señal, ruido en reductor, error F1003..."
+      ></textarea>
+
+      <label>Procedimiento realizado</label>
+      <textarea
+        name="procedimiento"
+        placeholder="Ej: Se revisa cableado, se reemplaza sensor, se prueba funcionamiento..."
+      ></textarea>
+
+      <label>Componentes utilizados</label>
+      <textarea
+        name="componentes"
+        placeholder="Ej: Sensor M12, cable encoder, rodamiento 6205..."
+      ></textarea>
+
+    </div>
+
+    <button type="submit">Guardar evidencia</button>
   </form>
 
+  <!-- =====================================================
+       MODAL LOGIN TÉCNICO
+       ===================================================== -->
+  <div id="login-tecnico" class="modal-login">
+    <div class="modal-contenido">
+      <h3>Modo Técnico</h3>
+      <p>Ingrese la clave técnica</p>
+
+      <input
+        id="clave_tecnica_modal"
+        type="password"
+        placeholder="Clave técnica">
+
+      <button type="button" onclick="validarModoTecnico()">Ingresar</button>
+      <button type="button" onclick="cerrarLoginTecnico()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       HISTORIAL DEL INCIDENTE
+       ===================================================== -->
   <h2>Historial</h2>
 
   {% if comentarios %}
@@ -174,7 +321,21 @@
       </p>
       {% endif %}
 
-      <p>{{ c.comentario }}</p>
+      {% if c.falla %}
+        <p><strong>Falla:</strong> {{ c.falla }}</p>
+      {% endif %}
+
+      {% if c.procedimiento %}
+        <p><strong>Procedimiento:</strong> {{ c.procedimiento }}</p>
+      {% endif %}
+
+      {% if c.componentes %}
+        <p><strong>Componentes:</strong> {{ c.componentes }}</p>
+      {% endif %}
+
+      {% if c.comentario %}
+        <p><strong>Comentario:</strong> {{ c.comentario }}</p>
+      {% endif %}
 
       {% if c.foto_url %}
         <img src="{{ c.foto_url }}" class="foto">
