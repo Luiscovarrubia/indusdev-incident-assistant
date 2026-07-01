@@ -496,14 +496,24 @@ def dashboard(request: Request):
     resumen = calcular_resumen(incidentes)
     maquinas_panel = construir_panel_maquinas(incidentes)
 
-    return templates.TemplateResponse(
-        "dashboard.html",
-        {
-            "request": request,
-            "incidentes": incidentes,
-            "resumen": resumen,
-            "maquinas_panel": maquinas_panel,
-        },
+    # return templates.TemplateResponse(
+    #     "dashboard.html",
+    #     {
+    #         "request": request,
+    #         "incidentes": incidentes,
+    #         "resumen": resumen,
+    #         "maquinas_panel": maquinas_panel,
+    #     },
+       return templates.TemplateResponse(
+            request=request,
+            name="dashboard.html",
+            context={
+                "incidentes": incidentes,
+                "resumen": resumen,
+                "maquinas_panel": maquinas_panel,
+                },
+) 
+
     )
 
 
