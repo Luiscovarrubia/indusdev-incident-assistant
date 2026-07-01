@@ -504,7 +504,7 @@ def dashboard(request: Request):
     #         "resumen": resumen,
     #         "maquinas_panel": maquinas_panel,
     #     },
-       return templates.TemplateResponse(
+    return templates.TemplateResponse(   
             request=request,
             name="dashboard.html",
             context={
@@ -512,7 +512,7 @@ def dashboard(request: Request):
                 "resumen": resumen,
                 "maquinas_panel": maquinas_panel,
                 },
-) 
+                
 
     )
 
