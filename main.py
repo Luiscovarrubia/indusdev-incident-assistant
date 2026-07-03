@@ -258,6 +258,7 @@ def preparar_incidente_para_vista(inc):
     inc["ultima_falla"] = inc.get("ultima_falla") or "-"
     inc["ultimo_procedimiento"] = inc.get("ultimo_procedimiento") or "-"
     inc["ultimos_componentes"] = inc.get("ultimos_componentes") or "-"
+    inc["ultimo_tecnico"] = inc.get("ultimo_tecnico") or "-"
 
     return inc
 
@@ -461,6 +462,19 @@ def guardar_foto_local(incidente_id: int, foto: Optional[UploadFile]):
     return f"/static/uploads/{nombre_archivo}"
 
 
+def template_response(request: Request, name: str, context: dict):
+    """
+    Wrapper compatible con Starlette/FastAPI recientes.
+    Evita errores por cambios de firma en TemplateResponse.
+    """
+
+    return templates.TemplateResponse(
+        request=request,
+        name=name,
+        context=context,
+    )
+
+
 # ==========================================================
 # 6. RUTAS BÁSICAS
 # ==========================================================
@@ -496,25 +510,14 @@ def dashboard(request: Request):
     resumen = calcular_resumen(incidentes)
     maquinas_panel = construir_panel_maquinas(incidentes)
 
-    # return templates.TemplateResponse(
-    #     "dashboard.html",
-    #     {
-    #         "request": request,
-    #         "incidentes": incidentes,
-    #         "resumen": resumen,
-    #         "maquinas_panel": maquinas_panel,
-    #     },
-        return templates.TemplateResponse(
-            request=request,
-            name="dashboard.html",
-            context={
-                "incidentes": incidentes,
-                "resumen": resumen,
-                "maquinas_panel": maquinas_panel,
-            },
-
-) 
-
+    return template_response(
+        request=request,
+        name="dashboard.html",
+        context={
+            "incidentes": incidentes,
+            "resumen": resumen,
+            "maquinas_panel": maquinas_panel,
+        },
     )
 
 
@@ -553,15 +556,14 @@ def ver_maquina(request: Request, nombre_maquina: str):
     if incidentes:
         estado_actual = incidentes[0].get("estado_maquina", "SIN_DATO")
 
-        return templates.TemplateResponse(
-            request=request,
-            name="maquina.html",
-            context={
-                "maquina": maquina,
-                "historial": historial,
-                "estadisticas": estadisticas,
-            },
-
+    return template_response(
+        request=request,
+        name="maquina.html",
+        context={
+            "maquina": nombre_maquina,
+            "estado_actual": estado_actual,
+            "incidentes": incidentes,
+        },
     )
 
 
@@ -634,16 +636,15 @@ def ver_incidente_web(request: Request, incidente_id: int):
     url_incidente = str(request.url)
     qr_img = generar_qr_base64(url_incidente)
 
-        return templates.TemplateResponse(
-            request=request,
-            name="incidente.html",
-            context={
-                "incidente": incidente,
-                "comentarios": comentarios,
-                "url_incidente": url_incidente,
-                "qr_img": qr_img,
-            },
-
+    return template_response(
+        request=request,
+        name="incidente.html",
+        context={
+            "incidente": incidente,
+            "comentarios": comentarios,
+            "url_incidente": url_incidente,
+            "qr_img": qr_img,
+        },
     )
 
 
@@ -889,3 +890,4 @@ def obtener_ultima_iot(maquina: str):
         }
 
     return {"ok": True, "maquina": maquina, "telemetria": datos[0]}
+
