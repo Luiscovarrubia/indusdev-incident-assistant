@@ -496,14 +496,25 @@ def dashboard(request: Request):
     resumen = calcular_resumen(incidentes)
     maquinas_panel = construir_panel_maquinas(incidentes)
 
-    return templates.TemplateResponse(
-        request=request,
-        name="dashboard.html",
-        context={
-            "incidentes": incidentes,
-            "resumen": resumen,
-            "maquinas_panel": maquinas_panel,
-        },
+    # return templates.TemplateResponse(
+    #     "dashboard.html",
+    #     {
+    #         "request": request,
+    #         "incidentes": incidentes,
+    #         "resumen": resumen,
+    #         "maquinas_panel": maquinas_panel,
+    #     },
+        return templates.TemplateResponse(
+            request=request,
+            name="dashboard.html",
+            context={
+                "incidentes": incidentes,
+                "resumen": resumen,
+                "maquinas_panel": maquinas_panel,
+            },
+
+) 
+
     )
 
 
@@ -542,14 +553,15 @@ def ver_maquina(request: Request, nombre_maquina: str):
     if incidentes:
         estado_actual = incidentes[0].get("estado_maquina", "SIN_DATO")
 
-    return templates.TemplateResponse(
-        request=request,
-        name="maquina.html",
-        context={
-            "maquina": nombre_maquina,
-            "estado_actual": estado_actual,
-            "incidentes": incidentes,
-        },
+        return templates.TemplateResponse(
+            request=request,
+            name="maquina.html",
+            context={
+                "maquina": maquina,
+                "historial": historial,
+                "estadisticas": estadisticas,
+            },
+
     )
 
 
@@ -622,15 +634,16 @@ def ver_incidente_web(request: Request, incidente_id: int):
     url_incidente = str(request.url)
     qr_img = generar_qr_base64(url_incidente)
 
-    return templates.TemplateResponse(
-        request=request,
-        name="incidente.html",
-        context={
-            "incidente": incidente,
-            "comentarios": comentarios,
-            "qr_img": qr_img,
-            "url_incidente": url_incidente,
-        },
+        return templates.TemplateResponse(
+            request=request,
+            name="incidente.html",
+            context={
+                "incidente": incidente,
+                "comentarios": comentarios,
+                "url_incidente": url_incidente,
+                "qr_img": qr_img,
+            },
+
     )
 
 
@@ -876,4 +889,3 @@ def obtener_ultima_iot(maquina: str):
         }
 
     return {"ok": True, "maquina": maquina, "telemetria": datos[0]}
-
