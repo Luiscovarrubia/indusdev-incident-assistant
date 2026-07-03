@@ -496,24 +496,14 @@ def dashboard(request: Request):
     resumen = calcular_resumen(incidentes)
     maquinas_panel = construir_panel_maquinas(incidentes)
 
-    # return templates.TemplateResponse(
-    #     "dashboard.html",
-    #     {
-    #         "request": request,
-    #         "incidentes": incidentes,
-    #         "resumen": resumen,
-    #         "maquinas_panel": maquinas_panel,
-    #     },
-    return templates.TemplateResponse(   
-            request=request,
-            name="dashboard.html",
-            context={
-                "incidentes": incidentes,
-                "resumen": resumen,
-                "maquinas_panel": maquinas_panel,
-                },
-                
-
+    return templates.TemplateResponse(
+        request=request,
+        name="dashboard.html",
+        context={
+            "incidentes": incidentes,
+            "resumen": resumen,
+            "maquinas_panel": maquinas_panel,
+        },
     )
 
 
@@ -553,9 +543,9 @@ def ver_maquina(request: Request, nombre_maquina: str):
         estado_actual = incidentes[0].get("estado_maquina", "SIN_DATO")
 
     return templates.TemplateResponse(
-        "maquina.html",
-        {
-            "request": request,
+        request=request,
+        name="maquina.html",
+        context={
             "maquina": nombre_maquina,
             "estado_actual": estado_actual,
             "incidentes": incidentes,
@@ -633,9 +623,9 @@ def ver_incidente_web(request: Request, incidente_id: int):
     qr_img = generar_qr_base64(url_incidente)
 
     return templates.TemplateResponse(
-        "incidente.html",
-        {
-            "request": request,
+        request=request,
+        name="incidente.html",
+        context={
             "incidente": incidente,
             "comentarios": comentarios,
             "qr_img": qr_img,
@@ -886,3 +876,4 @@ def obtener_ultima_iot(maquina: str):
         }
 
     return {"ok": True, "maquina": maquina, "telemetria": datos[0]}
+
