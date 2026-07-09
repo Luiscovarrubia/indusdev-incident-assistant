@@ -534,6 +534,129 @@ def listar_incidentes():
 
 
 # ==========================================================
+# 8. PLANTA DE MÁQUINAS
+# ==========================================================
+
+@app.get("/maquinas", response_class=HTMLResponse)
+def panel_planta(request: Request, sim: int = 1):
+    """
+    Panel visual de planta.
+    Pensado para TV / sala de supervisores.
+
+    sim=1 agrega máquinas demo para mostrar parque completo.
+    sim=0 muestra solo máquinas reales desde Supabase.
+    """
+
+    incidentes = supabase_get("incidentes?select=*&order=id.desc")
+
+    for inc in incidentes:
+        preparar_incidente_para_vista(inc)
+
+    maquinas_panel = construir_panel_maquinas(incidentes)
+
+    # Máquinas de demostración visual.
+    # No se guardan en Supabase.
+    if sim == 1:
+        maquinas_demo = [
+            {
+                "maquina": "EURA_MAQ6",
+                "estado_maquina": "OPERATIVA",
+                "ultima_falla": "-",
+                "duracion_detenido": "-",
+                "incidente_id": None,
+                "demo": True,
+            },
+            {
+                "maquina": "ROBOMASTER",
+                "estado_maquina": "OPERATIVA",
+                "ultima_falla": "-",
+                "duracion_detenido": "-",
+                "incidente_id": None,
+                "demo": True,
+            },
+            {
+                "maquina": "OPTIBAT",
+                "estado_maquina": "OPERATIVA",
+                "ultima_falla": "-",
+                "duracion_detenido": "-",
+                "incidente_id": None,
+                "demo": True,
+            },
+            {
+                "maquina": "STAR_MAQ2",
+                "estado_maquina": "DETENIDA",
+                "ultima_falla": "Falla sensor corte",
+                "duracion_detenido": "42 min",
+                "incidente_id": None,
+                "demo": True,
+            },
+            {
+                "maquina": "PRIMA3D_MAQ7",
+                "estado_maquina": "MANTENIMIENTO",
+                "ultima_falla": "Preventiva",
+                "duracion_detenido": "2 h 15 min",
+                "incidente_id": None,
+                "demo": True,
+            },
+        ]
+
+        maquinas_panel.extend(maquinas_demo)
+
+    orden_estado = {
+        "DETENIDA": 1,
+        "MANTENIMIENTO": 2,
+        "OPERATIVA_CON_ANOMALIA": 3,
+        "SIN_DATO": 4,
+        "OPERATIVA": 5,
+    }
+
+    maquinas_panel = sorted(
+        maquinas_panel,
+        key=lambda m: orden_estado.get(m.get("estado_maquina", "SIN_DATO"), 99)
+    )
+
+    BASE_URL_LOCAL = str(request.base_url).rstrip("/")
+
+    for maquina in maquinas_panel:
+
+        if maquina.get("demo"):
+            continue
+
+        nombre = maquina.get("maquina")
+        estado = maquina.get("estado_maquina")
+        incidente_id = maquina.get("incidente_id")
+        estado_incidente = maquina.get("estado_incidente")
+
+    # Si la máquina está detenida o con anomalía y tiene incidente abierto,
+    # el QR lleva directo al incidente.
+        if (
+        estado in ["DETENIDA", "OPERATIVA_CON_ANOMALIA"]
+        and incidente_id
+        and estado_incidente != "CERRADO"
+        ):
+            url = f"{BASE_URL_LOCAL}/incidente/{incidente_id}"
+
+    # Si está operativa o en mantenimiento,
+    # el QR lleva a la ficha/historial de la máquina.
+        else:
+            url = f"{BASE_URL_LOCAL}/maquina/{nombre}"
+
+        maquina["qr"] = generar_qr_base64(url)
+
+
+    return templates.TemplateResponse(
+        request=request,
+        name="maquinas.html",
+        context={
+            "maquinas_panel": maquinas_panel,
+            "sim": sim,
+        },
+    )
+
+
+
+
+# ==========================================================
 # 8. FICHA DE MÁQUINA
 # ==========================================================
 

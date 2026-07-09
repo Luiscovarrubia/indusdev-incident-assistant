@@ -489,3 +489,235 @@
       margin-bottom: 8px;
     }
   }
+
+  
+
+/* ==========================================================
+   PANEL DE PLANTA - FINAL
+   ========================================================== */
+
+   .plant-body {
+    background: #0b1117;
+    color: white;
+    min-height: 100vh;
+  }
+  
+  .plant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 26px 34px;
+    background: #111827;
+    border-bottom: 1px solid #263241;
+  }
+  
+  .plant-header h1 {
+    margin: 0;
+    font-size: 34px;
+    letter-spacing: 1px;
+  }
+  
+  .plant-header p {
+    margin: 6px 0 0 0;
+    color: #9ca3af;
+  }
+  
+  .plant-brand {
+    color: #9ca3af;
+    font-size: 15px;
+  }
+  
+  .plant-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 14px;
+    padding: 18px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .plant-card {
+    display: block;
+    min-width: 0;
+    width: 100%;
+    min-height: 160px;
+    padding: 16px;
+    border-radius: 16px;
+    text-decoration: none;
+    color: white;
+    background: #1f2933;
+    box-shadow: 0 6px 18px rgba(0,0,0,.35);
+    box-sizing: border-box;
+    overflow: hidden;
+    transition: .2s;
+  }
+  
+  .plant-card:hover {
+    transform: translateY(-3px);
+  }
+  
+  .plant-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  
+  .plant-machine-name {
+    font-size: 22px;
+    font-weight: bold;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .plant-online {
+    flex-shrink: 0;
+    background: rgba(34,197,94,.15);
+    color: #86efac;
+    border: 1px solid #22c55e;
+    border-radius: 20px;
+    padding: 4px 8px;
+    font-size: 10px;
+    font-weight: bold;
+  }
+  
+  .plant-state {
+    margin-top: 18px;
+    font-size: 20px;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .plant-pilot {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  
+  .plant-pilot-operativa { background: #22c55e; }
+  .plant-pilot-operativa-con-anomalia { background: #facc15; }
+  .plant-pilot-detenida { background: #ef4444; }
+  .plant-pilot-mantenimiento { background: #38bdf8; }
+  .plant-pilot-sin-dato { background: #9ca3af; }
+  
+  .plant-summary,
+  .plant-time {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .plant-summary {
+    margin-top: 12px;
+    font-size: 16px;
+    color: #d1d5db;
+  }
+  
+  .plant-time {
+    margin-top: 6px;
+    font-size: 14px;
+    color: #fbbf24;
+  }
+  
+  /* Estados de tarjeta */
+  .plant-operativa {
+    border: 2px solid #22c55e;
+    background: linear-gradient(135deg,#10281a,#1f2933);
+  }
+  
+  .plant-operativa-con-anomalia {
+    border: 2px solid #facc15;
+    background: linear-gradient(135deg,#4b4108,#1f2933);
+  }
+  
+  .plant-detenida {
+    border: 2px solid #ef4444;
+    background: linear-gradient(135deg,#351010,#1f2933);
+  }
+  
+  .plant-mantenimiento {
+    border: 2px solid #38bdf8;
+    background: linear-gradient(135deg,#103347,#1f2933);
+  }
+  
+  .plant-sin-dato {
+    border: 2px solid #9ca3af;
+  }
+  
+  /* QR */
+  .plant-qr {
+    margin-top: 12px;
+    margin-left: auto;
+    width: 108px;
+    background: #fff;
+    padding: 6px;
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,.35);
+  }
+  
+  .plant-qr img {
+    width: 92px;
+    height: 92px;
+    display: block;
+    margin: auto;
+  }
+  
+  .plant-qr-operativa { border: 5px solid #22c55e; }
+  .plant-qr-operativa-con-anomalia { border: 5px solid #facc15; }
+  .plant-qr-detenida { border: 5px solid #ef4444; }
+  .plant-qr-mantenimiento { border: 5px solid #38bdf8; }
+  .plant-qr-sin-dato { border: 5px solid #9ca3af; }
+  
+  @media (max-width: 900px) {
+    .plant-header {
+      display: block;
+      padding: 20px;
+    }
+  
+    .plant-header h1 {
+      font-size: 26px;
+    }
+  
+    .plant-brand {
+      margin-top: 8px;
+    }
+  
+    .plant-grid {
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+      padding: 12px;
+    }
+  
+    .plant-card {
+      min-height: 150px;
+      padding: 12px;
+    }
+  
+    .plant-machine-name {
+      font-size: 18px;
+    }
+  
+    .plant-state {
+      font-size: 17px;
+    }
+  
+    .plant-qr {
+      width: 88px;
+    }
+  
+    .plant-qr img {
+      width: 74px;
+      height: 74px;
+    }
+  }
+
+

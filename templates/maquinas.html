@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Planta</title>
+  <link rel="stylesheet" href="/static/style.css?v=99">
+</head>
+
+<body class="plant-body">
+
+<div class="plant-header">
+  <div>
+    <h1>PLANTA EN OPERACIÓN</h1>
+    <p>Monitoreo general de máquinas</p>
+  </div>
+
+  <div class="plant-brand">
+    Powered by INDUSDEV
+  </div>
+</div>
+
+<div class="plant-grid">
+
+    {% for m in maquinas_panel %}
+
+    {% if m.demo %}
+      <div class="plant-card plant-{{ m.estado_maquina|lower|replace('_','-') }}">
+    {% else %}
+      <a class="plant-card plant-{{ m.estado_maquina|lower|replace('_','-') }}"
+         href="/maquina/{{ m.maquina }}">
+    {% endif %}
+  
+      <div class="plant-card-top">
+        <div class="plant-machine-name">
+          {{ m.maquina }}
+        </div>
+        {% if not m.demo %}
+        <div class="plant-online">
+          🖧 ONLINE
+        </div>
+      {% endif %}
+      </div>
+  
+      <div class="plant-state">
+        <span class="plant-pilot plant-pilot-{{ m.estado_maquina|lower|replace('_','-') }}"></span>
+        {{ m.estado_maquina }}
+      </div>
+  
+      <div class="plant-summary">
+        {% if m.ultima_falla and m.ultima_falla != "-" %}
+          {{ m.ultima_falla }}
+        {% else %}
+          Producción normal
+        {% endif %}
+      </div>
+  
+      {% if m.duracion_detenido and m.duracion_detenido != "-" %}
+        <div class="plant-time">
+          Detención: {{ m.duracion_detenido }}
+        </div>
+      {% endif %}
+  
+      {% if not m.demo and m.qr %}
+      <div class="plant-qr plant-qr-{{ m.estado_maquina|lower|replace('_','-') }}">
+        <img src="{{ m.qr }}">
+      </div>
+    {% endif %}
+  
+    {% if m.demo %}
+      </div>
+    {% else %}
+      </a>
+    {% endif %}
+  
+  {% endfor %}
+
+</div>
+
+</body>
+</html>
